@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="/static/main.css"/>
+</head>
+<body>
+    <div class="title">
+        <h1>Kareem</h1>
+    </div>
+    <div class="descriptor">
+        <h2>Wordle, but UCLA Basketball</h2>
+    </div>
+
+    <input id="guess" type="text" value="">
+    
+    <p1 id="log"></p1>
+
+    <script>
+        guess = document.getElementById("guess");
+        log = document.getElementById("log")
+
+        guess.addEventListener("submit", (event) => {
+            log.textContent = event.target.value;
+            event.preventDefault();
+        });
+    </script>
+</body>
+</html>
