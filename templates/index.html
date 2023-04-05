@@ -2,7 +2,9 @@
 <html>
 <head>
     <link rel="stylesheet" href="/static/main.css"/>
+    <script defer type="text/javascript" src="/static/map.js"></script>
 </head>
+
 <body>
     <div class="title">
         <h1>Kareem</h1>
@@ -10,19 +12,25 @@
     <div class="descriptor">
         <h2>Wordle, but UCLA Basketball</h2>
     </div>
-
-    <input id="guess" type="text" value="">
     
-    <p1 id="log"></p1>
+    <div class="form">
+        <form id="form">
+            <input id="input" name="guess" type="text" value=""></input>
+        </form>
+    </div>
 
-    <script>
-        guess = document.getElementById("guess");
-        log = document.getElementById("log")
+    <!-- <p1 id="log"></p1> -->
+    
+    <div class="game_table_head">
+        <div class="game_table_cell"></div>
+        <div class="game_table_cell">PPG</div>
+        <div class="game_table_cell">RPG</div>
+        <div class="game_table_cell">APG</div>
+        <div class="game_table_cell">FG%</div>
+    </div>
+    
+    <div class="game_table" id="game_table"></div>
 
-        guess.addEventListener("submit", (event) => {
-            log.textContent = event.target.value;
-            event.preventDefault();
-        });
-    </script>
+
 </body>
 </html>
