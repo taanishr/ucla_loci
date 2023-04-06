@@ -1,5 +1,7 @@
 import csv, random
 
+stats = ["PPG", "RPG", "APG", "FG%"]
+
 class load_data:
     careers = {}
 
@@ -14,16 +16,37 @@ class load_data:
         return  random.choice(list(load_data.careers.keys()))
 
     @staticmethod
-    def get_stat(name, stat):
+    def get_stat(stat, name):
         return load_data.careers[name][stat]
-
-def compareCareerStat(career1, career2, stat):
-    if (load_data.get_stat(career1, stat) > load_data.get_stat(career2, stat)):
-        return True
-    else:
-        return False
 
 def safe_float(str):
         if (str==''):
             return 0
         return float(str)
+
+def compareStat(stat, career1, career2):
+     career1Stat = load_data.get_stat(stat, career1)
+     career2Stat = load_data.get_stat(stat, career2)
+     if (career1Stat == career2Stat):
+          return {"value" : career1Stat, "equality" : 1}
+     elif (career1Stat > career2Stat):
+          return {"value" : career1Stat, "equality" : 2}
+     else:
+        return {"value" : career1Stat, "equality" : 0}
+
+def compareStats(dict, career1, career2):
+    for stat in stats:
+        dict[stat] = compareStat(stat, career1, career2)
+     
+def compareCareers(career1, career2):
+    playerComparison = {}
+    playerComparison["player"] = career1
+
+    if (career1 == career2):
+        playerComparison["answer"] = True
+    else:
+        playerComparison["answer"] = False
+
+    compareStats(playerComparison, career1, career2)
+
+    return playerComparison

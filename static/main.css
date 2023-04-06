@@ -41,7 +41,7 @@ div.game_table_head
     margin-bottom: 1%;
 }
 
-div.game_table_cell
+div.game_table_cell, div.game_table_cell_high, div.game_table_cell_low, div.game_table_cell_equal
 {
     display: inline-block;
     text-align: center;
@@ -49,6 +49,19 @@ div.game_table_cell
     margin-right: 2%;
     margin-left: 2%;
 }
+
+div.game_table_cell_high {
+    background-color: lightcoral;
+}
+
+div.game_table_cell_low {
+    background-color: lightblue;
+}
+
+div.game_table_cell_equal {
+    background-color: lightgreen;
+}
+
 
 div.game_table {
     display: block;

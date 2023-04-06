@@ -1,3 +1,5 @@
+// TODO: finish setCellState, make styling better, tie number of guesses + answers to cookies, add favicon
+
 const form = document.getElementById("form");
 const input = document.getElementById("input");
 const num_guesses = document.getElementById("num_guesses")
@@ -51,7 +53,7 @@ form.addEventListener("submit", (e) => {
                 'Content-Type' : 'application/json'
             },
             body: JSON.stringify({'guess' : val})
-        }).then((res) => res.json()).then((data) => createStatRow(data))
+        }).then((res) => res.json()).then((data) => createStatRow(data) /*console.log(data)*/);
 
         fetch("/num_guesses", {
             method: 'POST'
@@ -76,35 +78,34 @@ function setPlaceholder(elem, value) {
 }
 
 function createStatRow(data) {
-    r = document.createElement("div");
+    var r = document.createElement("div");
     r.setAttribute("class", "game_table_row");
 
-    ppg = document.createElement("div");
-    setCellState(data, ppg, "PPG")
-
-    rpg = document.createElement("div");
-    setCellState(data, rpg, "RPG")
-
-    apg = document.createElement("div");
-    setCellState(data, apg, "APG")
-
-    fg = document.createElement("div");
-    setCellState(data, fg, "FG%") 
-
-    game_table.appendChild(ppg);
-    game_table.appendChild(rpg);
-    game_table.appendChild(apg);
-    game_table.appendChild(fg);
+    console.log(data);
+    if (data["answer"]) {
+        input.setAttribute("disabled", "");
+        alert("congratulations");
+    }
+    fetch('/retrieve_categories').then((res) => res.json()).then((categories) => {
+        for (category of categories) {
+            e = document.createElement("div");
+            setCellState(data, e, category);
+            r.appendChild(e);
+        }
+    });
 
     game_table.appendChild(r);
+
 }
 
+// Finish setCellState function
 function setCellState(data, cell, stat) {
-    cell.setAttribute("class", "game_table_cell");
-
-    if  (data[stat] == true) {
-        cell.innerHTML = "<b>↑</b>"
-    }else{
-        cell.innerHTML = "<b>↓</b>"
+    if(data[stat]["equality"] == 2) {
+        cell.setAttribute("class", "game_table_cell_high");
+    }else if (data[stat]["equality"] == 1) {
+        cell.setAttribute("class", "game_table_cell_equal");
+    }else {
+        cell.setAttribute("class", "game_table_cell_low");
     }
+    cell.innerHTML = data[stat]["value"];
 }

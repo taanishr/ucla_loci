@@ -1,13 +1,11 @@
 from flask import Flask, render_template, request, jsonify
-from interface import load_data, compareCareerStat
+from interface import load_data, compareCareers, stats
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 
 load_data()
 
 num_guesses = 5
-
-stats = ["PPG", "RPG", "APG", "FG%"]
 
 answer = "Kareem Abdul-Jabbar"
 
@@ -33,20 +31,12 @@ def numGuesses():
         num_guesses = num_guesses - 1
     return jsonify({"num_guesses" : num_guesses})
 
+@app.route("/retrieve_categories", methods=['GET'])
+def retrieveCategories():
+    return jsonify(stats)
+
 @app.route("/reset", methods=['GET'])
 def reset():
     global num_guesses
     num_guesses = 5
     return jsonify({"num_guesses" : num_guesses})
-
-def compareCareers(career1, career2):
-    playerComparison = {}
-    for stat in stats:
-        playerComparison[stat] = compareCareerStat(career1, career2, stat)
-    return playerComparison
-      
-def checkAnswer(career1, career2):
-    if (career1 == career2):
-        return True
-    else:
-        return False
