@@ -1,4 +1,4 @@
-// TODO: finish setCellState, make styling better, tie number of guesses + answers to cookies, add favicon
+// TODO: make styling better, tie number of guesses + answers to cookies, add favicon
 
 const form = document.getElementById("form");
 const input = document.getElementById("input");
@@ -53,7 +53,7 @@ form.addEventListener("submit", (e) => {
                 'Content-Type' : 'application/json'
             },
             body: JSON.stringify({'guess' : val})
-        }).then((res) => res.json()).then((data) => createStatRow(data) /*console.log(data)*/);
+        }).then((res) => res.json()).then((data) => createStatRow(data));
 
         fetch("/num_guesses", {
             method: 'POST'
@@ -81,18 +81,23 @@ function createStatRow(data) {
     var r = document.createElement("div");
     r.setAttribute("class", "game_table_row");
 
-    console.log(data);
+    player = document.createElement("div");
+    player.setAttribute("class", "game_table_cell");
+    player.innerHTML = data["player"];
+
     if (data["answer"]) {
         input.setAttribute("disabled", "");
         alert("congratulations");
     }
+
     fetch('/retrieve_categories').then((res) => res.json()).then((categories) => {
+        r.appendChild(player);
         for (category of categories) {
             e = document.createElement("div");
             setCellState(data, e, category);
             r.appendChild(e);
         }
-    });
+    })
 
     game_table.appendChild(r);
 

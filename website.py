@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session
 from interface import load_data, compareCareers, stats
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
