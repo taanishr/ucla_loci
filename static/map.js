@@ -5,11 +5,9 @@ const input = document.getElementById("input");
 const num_guesses = document.getElementById("num_guesses")
 const game_table = document.getElementById("game_table")
 
-function modifyTextContent(elem, text) {
-    elem.textContent = text;
-}
+reset();
 
-fetch('/reset').then((res) => res.json()).then((data) => setPlaceholder(input, data["num_guesses"]));
+loadGuesses();
 
 var arr = []
 fetch('/retrive_careers').then((res) => res.json()).then((data) => arr = Object.keys(data))
@@ -47,13 +45,9 @@ form.addEventListener("submit", (e) => {
     if(document.getElementsByName("player").length > 0) {
         val = document.getElementsByName("player")[0].textContent;
 
-        fetch("/submit_guess", {
-            method: 'POST',
-            headers: {
-                'Content-Type' : 'application/json'
-            },
-            body: JSON.stringify({'guess' : val})
-        }).then((res) => res.json()).then((data) => createStatRow(data));
+        storeGuess(val);
+        
+        submitGuess(val).then((data) => createStatRow(data));;
 
         fetch("/num_guesses", {
             method: 'POST'
@@ -77,6 +71,37 @@ function setPlaceholder(elem, value) {
     elem.setAttribute("placeholder", value + " Guesses Remaining")
 }
 
+function storeGuess(name) {
+    fetch("num_guesses").then((res) => res.json()).then((data) => {
+        const id = 5 - data["num_guesses"];
+        localStorage.setItem(id, name);
+    });
+}
+
+function loadGuesses() {
+    var arr = [];
+    for (i = 0; i < localStorage.length; i++) {
+        player = localStorage.getItem(i);
+        arr.push(submitGuess(player));
+    }
+    
+    Promise.all(arr).then((values) => {
+        for (value of values) {
+            createStatRow(value);
+        }
+    });
+}
+
+function submitGuess(player) {
+    return fetch("/submit_guess", {
+        method: 'POST',
+        headers: {
+            'Content-Type' : 'application/json'
+        },
+        body: JSON.stringify({'guess' : player})
+    }).then((res) => res.json())
+}
+
 function createStatRow(data) {
     var r = document.createElement("div");
     r.setAttribute("class", "game_table_row");
@@ -84,14 +109,14 @@ function createStatRow(data) {
     player = document.createElement("div");
     player.setAttribute("class", "game_table_cell");
     player.innerHTML = data["player"];
+    r.appendChild(player);
 
-    if (data["answer"]) {
-        input.setAttribute("disabled", "");
-        alert("congratulations");
-    }
+    // if (data["answer"]) {
+    //     input.setAttribute("disabled", "");
+    //     // alert("congratulations");
+    // }
 
     fetch('/retrieve_categories').then((res) => res.json()).then((categories) => {
-        r.appendChild(player);
         for (category of categories) {
             e = document.createElement("div");
             setCellState(data, e, category);
@@ -112,5 +137,11 @@ function setCellState(data, cell, stat) {
     }else {
         cell.setAttribute("class", "game_table_cell_low");
     }
+
     cell.innerHTML = data[stat]["value"];
+}
+
+function reset() {
+    localStorage.clear();
+    fetch('/reset').then((res) => res.json()).then((data) => setPlaceholder(input, data["num_guesses"]));
 }
