@@ -1,9 +1,11 @@
-// TODO: make styling better, tie number of guesses + answers to cookies, add favicon
+// TODO: make styling better, change csv system to database, fix expiry date on guesses cookie, add favicon
 
 const form = document.getElementById("form");
 const input = document.getElementById("input");
 const num_guesses = document.getElementById("num_guesses")
 const game_table = document.getElementById("game_table")
+
+console.log(document.cookie)
 
 reset();
 
@@ -11,6 +13,7 @@ loadGuesses();
 
 var arr = []
 fetch('/retrive_careers').then((res) => res.json()).then((data) => arr = Object.keys(data))
+
 
 form.addEventListener("input", (e) => {
     closeLists();
@@ -49,9 +52,12 @@ form.addEventListener("submit", (e) => {
         
         submitGuess(val).then((data) => createStatRow(data));;
 
-        fetch("/num_guesses", {
-            method: 'POST'
-        }).then((res) => res.json()).then((data) => setPlaceholder(input, data["num_guesses"]));
+        // fetch("/num_guesses", {
+        //     method: 'POST'
+        // }).then((res) => res.json()).then((data) => setPlaceholder(input, data["num_guesses"]));
+    
+        setCookie();
+        setPlaceholder(input, getCookie("guesses"));
 
         input.value = "";
 
@@ -72,10 +78,13 @@ function setPlaceholder(elem, value) {
 }
 
 function storeGuess(name) {
-    fetch("num_guesses").then((res) => res.json()).then((data) => {
-        const id = 5 - data["num_guesses"];
-        localStorage.setItem(id, name);
-    });
+    // fetch("num_guesses").then((res) => res.json()).then((data) => {
+    //     const id = 5 - data["num_guesses"];
+    //     localStorage.setItem(id, name);
+    // });
+
+    const id = 5 - parseInt(getCookie("guesses"));
+    localStorage.setItem(id, name);
 }
 
 function loadGuesses() {
@@ -109,7 +118,7 @@ function createStatRow(data) {
     player = document.createElement("div");
     player.setAttribute("class", "game_table_cell");
     player.innerHTML = data["player"];
-    r.appendChild(player);
+    r.appendChild(player)
 
     // if (data["answer"]) {
     //     input.setAttribute("disabled", "");
@@ -128,7 +137,6 @@ function createStatRow(data) {
 
 }
 
-// Finish setCellState function
 function setCellState(data, cell, stat) {
     if(data[stat]["equality"] == 2) {
         cell.setAttribute("class", "game_table_cell_high");
@@ -141,7 +149,29 @@ function setCellState(data, cell, stat) {
     cell.innerHTML = data[stat]["value"];
 }
 
+function getCookie(c_name) {
+    let name = c_name + "=";
+    let cookies = decodeURIComponent(document.cookie);
+    let cookiesArr = cookies.split(";")
+    for (i = 0; i < cookiesArr.length; i++) {
+        cookie = cookiesArr[i];
+        if (name == cookie.substr(0, name.length))
+            return cookie.substr(name.length);
+    }
+    return null
+}
+
+function setCookie() {
+    console.log(getCookie("guesses"));
+    let guesses = parseInt(getCookie("guesses")) - 1;
+    // let expiry_date = getCookie("expiry_date");
+    // document.cookie = `guesses=${guesses};expires=${expiry_date}`;
+    console.log(guesses);
+    document.cookie = `guesses=${guesses}`;
+}
+
 function reset() {
     localStorage.clear();
     fetch('/reset').then((res) => res.json()).then((data) => setPlaceholder(input, data["num_guesses"]));
 }
+
