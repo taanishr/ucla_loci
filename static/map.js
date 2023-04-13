@@ -1,11 +1,9 @@
-// TODO: make styling better, change csv system to database, fix expiry date on guesses cookie, add favicon
+// TODO: make styling better, add win condition, change csv system to database, add favicon
 
 const form = document.getElementById("form");
 const input = document.getElementById("input");
 const num_guesses = document.getElementById("num_guesses")
 const game_table = document.getElementById("game_table")
-
-console.log(document.cookie)
 
 reset();
 
@@ -50,14 +48,11 @@ form.addEventListener("submit", (e) => {
 
         storeGuess(val);
         
-        submitGuess(val).then((data) => createStatRow(data));;
+        submitGuess(val).then((data) => createStatRow(data));
 
-        // fetch("/num_guesses", {
-        //     method: 'POST'
-        // }).then((res) => res.json()).then((data) => setPlaceholder(input, data["num_guesses"]));
-    
-        setCookie();
-        setPlaceholder(input, getCookie("guesses"));
+        fetch("/num_guesses", {
+            method: "POST"
+        }).then((res) => res.json()).then((data) => setPlaceholder(input, data["num_guesses"]));
 
         input.value = "";
 
@@ -78,13 +73,10 @@ function setPlaceholder(elem, value) {
 }
 
 function storeGuess(name) {
-    // fetch("num_guesses").then((res) => res.json()).then((data) => {
-    //     const id = 5 - data["num_guesses"];
-    //     localStorage.setItem(id, name);
-    // });
-
-    const id = 5 - parseInt(getCookie("guesses"));
-    localStorage.setItem(id, name);
+    fetch("num_guesses").then((res) => res.json()).then((data) => {
+        const id = 5 - data["num_guesses"];
+        localStorage.setItem(id, name);
+    });
 }
 
 function loadGuesses() {
@@ -147,27 +139,6 @@ function setCellState(data, cell, stat) {
     }
 
     cell.innerHTML = data[stat]["value"];
-}
-
-function getCookie(c_name) {
-    let name = c_name + "=";
-    let cookies = decodeURIComponent(document.cookie);
-    let cookiesArr = cookies.split(";")
-    for (i = 0; i < cookiesArr.length; i++) {
-        cookie = cookiesArr[i];
-        if (name == cookie.substr(0, name.length))
-            return cookie.substr(name.length);
-    }
-    return null
-}
-
-function setCookie() {
-    console.log(getCookie("guesses"));
-    let guesses = parseInt(getCookie("guesses")) - 1;
-    // let expiry_date = getCookie("expiry_date");
-    // document.cookie = `guesses=${guesses};expires=${expiry_date}`;
-    console.log(guesses);
-    document.cookie = `guesses=${guesses}`;
 }
 
 function reset() {
