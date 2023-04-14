@@ -80,8 +80,10 @@ class Players(db.Model):
         return f'{self.player}'
     
 def compareStat(stat, career1, career2):
-    career1Stat = next(db.session.execute(db.select(stat).where(Players.player == career1)))[0]
-    career2Stat = next(db.session.execute(db.select(stat).where(Players.player == career2)))[0]
+    q1 = db.select(stat).where(Players.player == career1)
+    q2 = db.select(stat).where(Players.player == career2)
+    career1Stat = next(db.session.execute(q1))[0]
+    career2Stat = next(db.session.execute(q2))[0]
     if (career1Stat == career2Stat):
           return {"value" : career1Stat, "equality" : 1}
     elif (career1Stat > career2Stat):
