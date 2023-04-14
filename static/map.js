@@ -10,7 +10,7 @@ reset();
 loadGuesses();
 
 var arr = []
-fetch('/retrive_careers').then((res) => res.json()).then((data) => arr = Object.keys(data))
+fetch('/retrive_careers').then((res) => res.json()).then((data) => arr = data["careers"])
 
 
 form.addEventListener("input", (e) => {
@@ -142,7 +142,7 @@ function setCellState(data, cell, stat) {
 }
 
 function reset() {
-    localStorage.clear();
+    // localStorage.clear();
     fetch('/reset').then((res) => res.json()).then((data) => setPlaceholder(input, data["num_guesses"]));
 }
 
