@@ -1,4 +1,4 @@
-// TODO: make styling better, tie number of guesses + answers to cookies, add favicon
+// TODO: make styling better, add win condition, change csv system to database, add favicon
 
 const form = document.getElementById("form");
 const input = document.getElementById("input");
@@ -10,7 +10,8 @@ reset();
 loadGuesses();
 
 var arr = []
-fetch('/retrive_careers').then((res) => res.json()).then((data) => arr = Object.keys(data))
+fetch('/retrive_careers').then((res) => res.json()).then((data) => arr = data["careers"])
+
 
 form.addEventListener("input", (e) => {
     closeLists();
@@ -47,10 +48,10 @@ form.addEventListener("submit", (e) => {
 
         storeGuess(val);
         
-        submitGuess(val).then((data) => createStatRow(data));;
+        submitGuess(val).then((data) => createStatRow(data));
 
         fetch("/num_guesses", {
-            method: 'POST'
+            method: "POST"
         }).then((res) => res.json()).then((data) => setPlaceholder(input, data["num_guesses"]));
 
         input.value = "";
@@ -109,7 +110,7 @@ function createStatRow(data) {
     player = document.createElement("div");
     player.setAttribute("class", "game_table_cell");
     player.innerHTML = data["player"];
-    r.appendChild(player);
+    r.appendChild(player)
 
     // if (data["answer"]) {
     //     input.setAttribute("disabled", "");
@@ -128,7 +129,6 @@ function createStatRow(data) {
 
 }
 
-// Finish setCellState function
 function setCellState(data, cell, stat) {
     if(data[stat]["equality"] == 2) {
         cell.setAttribute("class", "game_table_cell_high");
@@ -142,6 +142,7 @@ function setCellState(data, cell, stat) {
 }
 
 function reset() {
-    localStorage.clear();
+    // localStorage.clear();
     fetch('/reset').then((res) => res.json()).then((data) => setPlaceholder(input, data["num_guesses"]));
 }
+
