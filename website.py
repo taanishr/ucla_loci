@@ -34,7 +34,7 @@ def index():
     if (session.get("userID") == None):
         session["userID"] = secrets.token_hex(4)
         session.permanent = True
-        app.permanent_session_lifetime = timedelta(minutes=5)
+        app.permanent_session_lifetime = timedelta(days=1)
         r.mset({session["userID"]: 5, 'won': 0, 'new_session': 1})
     else:
         r.set('new_session', 0)
