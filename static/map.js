@@ -1,5 +1,3 @@
-// TODO:add favicon, tie localstorage to session
-
 const form = document.getElementById("form");
 const input = document.getElementById("input");
 const num_guesses = document.getElementById("num_guesses")
