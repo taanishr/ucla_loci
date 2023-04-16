@@ -1,4 +1,4 @@
-// TODO: make styling better, add win condition, change csv system to database, add favicon
+// TODO:add favicon, tie localstorage to session
 
 const form = document.getElementById("form");
 const input = document.getElementById("input");
@@ -7,11 +7,10 @@ const game_table = document.getElementById("game_table")
 
 reset();
 
-loadGuesses();
+// loadGuesses();
 
 var arr = []
 fetch('/retrive_careers').then((res) => res.json()).then((data) => arr = data["careers"])
-
 
 form.addEventListener("input", (e) => {
     closeLists();
@@ -73,19 +72,25 @@ function setPlaceholder(elem, value) {
 }
 
 function storeGuess(name) {
-    fetch("num_guesses").then((res) => res.json()).then((data) => {
-        const id = 5 - data["num_guesses"];
-        localStorage.setItem(id, name);
-    });
+    var oldItems = JSON.parse(localStorage.getItem('guesses')) || [];
+    
+    var newItem = name
+
+    oldItems.push(newItem);
+
+    localStorage.setItem('guesses', JSON.stringify(oldItems));
 }
 
 function loadGuesses() {
     var arr = [];
-    for (i = 0; i < localStorage.length; i++) {
-        player = localStorage.getItem(i);
+
+    guesses = JSON.parse(localStorage.getItem('guesses')) || [];
+
+    for (i = 0; i < guesses.length; i++) {
+        player = guesses[i];
         arr.push(submitGuess(player));
     }
-    
+
     Promise.all(arr).then((values) => {
         for (value of values) {
             createStatRow(value);
@@ -112,10 +117,25 @@ function createStatRow(data) {
     player.innerHTML = data["player"];
     r.appendChild(player)
 
+    // TODO: check loss condition
+
+
+    // check win condition
     // if (data["answer"]) {
     //     input.setAttribute("disabled", "");
-    //     // alert("congratulations");
+    //     alert("congratulations");
     // }
+    fetch('/win_cond').then((res) => res.json()).then((win_data) => {
+        if (input.disabled == false) {
+            if (win_data["won"] == true) {
+                input.setAttribute("disabled", "");
+                alert("congratulations");
+            }else if (win_data["num_guesses"] == 0) {
+                input.setAttribute("disabled", "");
+                alert(`The answer was ${win_data["answer"]}`)
+            }
+        }  
+    });
 
     fetch('/retrieve_categories').then((res) => res.json()).then((categories) => {
         for (category of categories) {
@@ -123,7 +143,7 @@ function createStatRow(data) {
             setCellState(data, e, category);
             r.appendChild(e);
         }
-    })
+    });
 
     game_table.appendChild(r);
 
@@ -142,7 +162,13 @@ function setCellState(data, cell, stat) {
 }
 
 function reset() {
-    // localStorage.clear();
-    fetch('/reset').then((res) => res.json()).then((data) => setPlaceholder(input, data["num_guesses"]));
+    fetch('/reset').then((res) => res.json()).then((data) => {
+        console.log(data["new_session"])
+        if (data["new_session"]) {
+            localStorage.clear()
+        }else {
+            loadGuesses();
+        }
+        setPlaceholder(input, data["num_guesses"])
+    });
 }
-
