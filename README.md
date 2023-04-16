@@ -9,3 +9,7 @@ If the stat is blue (like ppg, rpg and fg%), then the correct player has a highe
 your guess has the exact same average as the correct player.
 
 Have fun!
+
+Note, when writing your guess, a useful popup will recommend players you to enter. When you hit enter on your keyboard, the first name on the popup will be submitted as your guess.
+
+![image](https://user-images.githubusercontent.com/49845822/232279833-e6bcf1cc-f02a-4765-9c74-e68931b1d6a6.png)
